@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote Électronique Sécurisé - Élections DJILY</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.3);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.5); border-radius: 3px; }
+    </style>
+</head>
+<body class="h-full text-slate-100 font-sans antialiased flex flex-col justify-between custom-scrollbar bg-slate-950">
+
+    <!-- Header Navigation -->
+    <header class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-shield-halved text-slate-950 text-lg font-bold"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base font-bold text-white tracking-wide">E-Vote DJILY</h1>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">HTTPS SÉCURISÉ</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Scrutin à Accès Restreint (6 Votants Exclusifs)</p>
+                </div>
+            </div>
+            
+            <button onclick="toggleAdminSection()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700/60 transition-all text-xs font-medium flex items-center gap-2">
+                <i class="fa-solid fa-lock text-indigo-400"></i>
+                <span>Espace Administrateur</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Notification Toast Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-10">
+
+        <!-- Banner Header -->
+        <section class="text-center max-w-2xl mx-auto space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300 text-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Session d'Élection Officielle Ouverte</span>
+            </div>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                Plateforme de Vote Authentifiée
+            </h2>
+            <p class="text-slate-400 text-sm">
+                Saisissez votre numéro de téléphone vérifié pour débloquer votre bulletin de vote individuel.
+            </p>
+        </section>
+
+        <!-- STEP 1: Phone Authentication Card -->
+        <section id="authSection" class="max-w-md mx-auto glass-card rounded-2xl p-6 sm:p-8 space-y-6 border border-slate-800 shadow-2xl">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-mobile-screen-button"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">Étape 1 : Authentification</h3>
+                <p class="text-xs text-slate-400">Entrez l'un des 6 numéros de téléphone autorisés</p>
+            </div>
+
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Numéro de téléphone</label>
+                    <div class="relative">
+                        <span class="absolute left-3.5 top-3.5 text-slate-500 text-sm font-semibold">+221</span>
+                        <input type="tel" id="voterPhoneInput" placeholder="770000000" maxlength="9" required
+                            class="w-full pl-16 pr-4 py-3 bg-slate-900/90 border border-slate-700/80 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-sm tracking-wide font-mono transition-all">
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-info text-indigo-400"></i>
+                        <span>Seuls les 6 numéros habilités peuvent procéder.</span>
+                    </p>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2">
+                    <span>Vérifier l'éligibilité</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- STEP 2: Voting Station (Hidden by default until authenticated) -->
+        <section id="votingSection" class="hidden space-y-8 max-w-5xl mx-auto">
+            <!-- Active Session Alert Header -->
+            <div class="glass-card rounded-2xl p-4 sm:p-5 border border-indigo-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-indigo-950/20">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-user-check"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-slate-400">Electeur vérifié :</span>
+                            <span id="activeVoterDisplay" class="font-mono font-bold text-indigo-300 text-sm">770000000</span>
+                        </div>
+                        <p class="text-xs text-emerald-400 flex items-center gap-1 mt-0.5">
+                            <i class="fa-solid fa-circle-dot text-[9px]"></i> Statut : Habilité à voter (Bulletin unique)
+                        </p>
+                    </div>
+                </div>
+
+                <button onclick="logoutVoterSession()" class="text-xs text-slate-400 hover:text-rose-400 transition-colors flex items-center gap-1">
+                    <i class="fa-solid fa-right-from-bracket"></i> Annuler / Changer de numéro
+                </button>
+            </div>
+
+            <div class="text-center space-y-1">
+                <h3 class="text-xl font-bold text-white">Étape 2 : Faites votre choix</h3>
+                <p class="text-xs text-slate-400">Cliquez sur le bouton du candidat de votre choix pour soumettre définitivement votre bulletin.</p>
+            </div>
+
+            <!-- Candidates Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                <!-- Candidate 1 -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 glow-hover relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-28 h-28 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 flex items-center justify-center font-bold text-base">N° 01</span>
+                            <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 text-[11px] font-medium border border-slate-700">Candidat 1</span>
+                        </div>
+
+                        <div class="text-center my-4 space-y-2">
+                            <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-indigo-600 to-indigo-400 p-1 shadow-lg shadow-indigo-500/20">
+                                <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                                    <i class="fa-solid fa-user-tie text-2xl text-indigo-400"></i>
+                                </div>
+                            </div>
+                            <h4 class="text-2xl font-bold text-white">DJILY 1</h4>
+                            <p class="text-xs text-indigo-300 font-medium">Vision & Innovation</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-6 border-t border-slate-800">
+                        <button onclick="confirmVote('DJILY1')" class="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Voter pour DJILY 1</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Candidate 2 -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 glow-hover relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-28 h-28 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/20 transition-all"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center font-bold text-base">N° 02</span>
+                            <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 text-[11px] font-medium border border-slate-700">Candidat 2</span>
+                        </div>
+
+                        <div class="text-center my-4 space-y-2">
+                            <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 p-1 shadow-lg shadow-purple-500/20">
+                                <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                                    <i class="fa-solid fa-user-gear text-2xl text-purple-400"></i>
+                                </div>
+                            </div>
+                            <h4 class="text-2xl font-bold text-white">DJILY 2</h4>
+                            <p class="text-xs text-purple-300 font-medium">Action & Proximité</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-6 border-t border-slate-800">
+                        <button onclick="confirmVote('DJILY2')" class="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-semibold text-sm transition-all shadow-lg shadow-purple-600/25 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Voter pour DJILY 2</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Candidate 3 -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 glow-hover relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-28 h-28 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-bold text-base">N° 03</span>
+                            <span class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 text-[11px] font-medium border border-slate-700">Candidat 3</span>
+                        </div>
+
+                        <div class="text-center my-4 space-y-2">
+                            <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-tr from-emerald-600 to-teal-400 p-1 shadow-lg shadow-emerald-500/20">
+                                <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                                    <i class="fa-solid fa-user-astronaut text-2xl text-emerald-400"></i>
+                                </div>
+                            </div>
+                            <h4 class="text-2xl font-bold text-white">DJILY 3</h4>
+                            <p class="text-xs text-emerald-300 font-medium">Progrès & Avenir</p>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 mt-6 border-t border-slate-800">
+                        <button onclick="confirmVote('DJILY3')" class="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold text-sm transition-all shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Voter pour DJILY 3</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: Voted Receipt State (When user has already voted) -->
+        <section id="alreadyVotedSection" class="hidden max-w-lg mx-auto glass-card rounded-2xl p-8 text-center space-y-6 border border-emerald-500/30">
+            <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full flex items-center justify-center mx-auto text-3xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            
+            <div class="space-y-2">
+                <h3 class="text-2xl font-bold text-white">Bulletin déjà enregistré</h3>
+                <p class="text-sm text-slate-300">
+                    Le numéro <span id="votedPhoneReceipt" class="font-mono font-bold text-emerald-400">77XXXXXXX</span> a déjà exprimé son vote.
+                </p>
+                <p id="votedTimeReceipt" class="text-xs text-slate-400 italic mt-1">Horodatage : --/--/---- --:--</p>
+            </div>
+
+            <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800 text-left text-xs space-y-2">
+                <p class="text-slate-300 font-semibold uppercase tracking-wider text-[10px]">Rappel de sécurité</p>
+                <p class="text-slate-400">Conformément aux règles du scrutin, un numéro de téléphone ne peut voter qu'une seule fois. Votre choix est scellé.</p>
+            </div>
+
+            <button onclick="resetVoterSession()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 hover:text-white transition-all border border-slate-700">
+                Se déconnecter de la session
+            </button>
+        </section>
+
+        <!-- ADMIN PANEL SECTION -->
+        <section id="adminSection" class="hidden transition-all duration-500 pt-6">
+            <div class="border-t border-slate-800 pt-8">
+                
+                <!-- Admin Login Box -->
+                <div id="adminLoginBox" class="max-w-md mx-auto glass-card rounded-2xl p-6 sm:p-8 space-y-6 border border-slate-800">
+                    <div class="text-center space-y-2">
+                        <div class="w-12 h-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto text-indigo-400 border border-indigo-500/20 text-xl">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white">Espace Administrateur</h3>
+                        <p class="text-xs text-slate-400">Accès au décompte en direct des 6 électeurs</p>
+                    </div>
+
+                    <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-2 uppercase tracking-wider">Mot de passe Administrateur</label>
+                            <input type="password" id="adminPass" placeholder="Saisir le mot de passe" required
+                                class="w-full px-4 py-3 bg-slate-900/90 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 text-sm">
+                            <p class="text-[11px] text-slate-500 mt-1">Mot de passe par défaut : <code class="text-indigo-400 font-mono">1234</code></p>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl transition-all shadow-lg shadow-indigo-600/25">
+                            Accéder au Panneau
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Admin Dashboard (After Login) -->
+                <div id="adminDashboard" class="hidden space-y-8">
+                    <!-- Dashboard Toolbar -->
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 glass-card p-6 rounded-2xl border border-slate-800">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h3 class="text-xl font-bold text-white">Dépouillement en direct</h3>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-0.5">Suivi en temps réel des 6 numéros autorisés</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button onclick="exportAuditReport()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium border border-slate-700 flex items-center gap-2">
+                                <i class="fa-solid fa-download text-indigo-400"></i> Exporter le PV
+                            </button>
+                            <button onclick="resetElectionData()" class="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-medium border border-rose-500/30 flex items-center gap-2">
+                                <i class="fa-solid fa-arrow-rotate-left"></i> Réinitialiser
+                            </button>
+                            <button onclick="logoutAdmin()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-400 hover:text-white">
+                                Quitter
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Top Metrics Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="glass-card rounded-xl p-5 border-l-4 border-emerald-500">
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Taux de participation</p>
+                            <div class="flex items-baseline justify-between mt-1">
+                                <p id="metricParticipation" class="text-3xl font-extrabold text-white">0 / 6</p>
+                                <span id="metricParticipationPct" class="text-sm font-semibold text-emerald-400">0%</span>
+                            </div>
+                            <div class="w-full bg-slate-800 rounded-full h-1.5 mt-3">
+                                <div id="participationBar" class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-xl p-5 border-l-4 border-indigo-400">
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">DJILY 1</p>
+                            <div class="flex items-baseline justify-between mt-1">
+                                <p id="metricDjily1" class="text-2xl font-bold text-white">0 voix</p>
+                                <span id="metricDjily1Pct" class="text-sm font-semibold text-indigo-400">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-xl p-5 border-l-4 border-purple-400">
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">DJILY 2</p>
+                            <div class="flex items-baseline justify-between mt-1">
+                                <p id="metricDjily2" class="text-2xl font-bold text-white">0 voix</p>
+                                <span id="metricDjily2Pct" class="text-sm font-semibold text-purple-400">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-xl p-5 border-l-4 border-emerald-400">
+                            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">DJILY 3</p>
+                            <div class="flex items-baseline justify-between mt-1">
+                                <p id="metricDjily3" class="text-2xl font-bold text-white">0 voix</p>
+                                <span id="metricDjily3Pct" class="text-sm font-semibold text-emerald-400">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart & Voter Audit List Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- Doughnut Chart -->
+                        <div class="lg:col-span-1 glass-card rounded-2xl p-6 flex flex-col justify-center">
+                            <h4 class="text-sm font-bold text-slate-200 mb-4 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-indigo-400"></i> Répartition des Suffrages
+                            </h4>
+                            <div class="relative w-full h-60 flex items-center justify-center">
+                                <canvas id="adminChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Authorized Voters Status List -->
+                        <div class="lg:col-span-2 glass-card rounded-2xl p-6 overflow-hidden flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-200 mb-4 flex items-center justify-between">
+                                    <span class="flex items-center gap-2">
+                                        <i class="fa-solid fa-users text-indigo-400"></i> Registre Nominatif des 6 Électeurs
+                                    </span>
+                                    <span class="text-xs text-slate-400 font-normal">Transparence & Sécurité</span>
+                                </h4>
+
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-sm">
+                                        <thead>
+                                            <tr class="border-b border-slate-800 text-[11px] text-slate-400 uppercase tracking-wider">
+                                                <th class="py-3 px-4">Numéro de Téléphone</th>
+                                                <th class="py-3 px-4 text-center">Statut du Vote</th>
+                                                <th class="py-3 px-4 text-center">Choix Exprimé</th>
+                                                <th class="py-3 px-4 text-right">Horodatage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="voterAuditTableBody" class="divide-y divide-slate-800/60 text-xs">
+                                            <!-- Dynamically filled by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Winner Banner -->
+                            <div id="winnerBanner" class="mt-6 p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-center hidden">
+                                <span class="text-[10px] text-indigo-300 uppercase tracking-widest font-semibold block">Tendance / Vainqueur</span>
+                                <p id="winnerText" class="text-base font-bold text-white mt-0.5">---</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-900/40 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 Plateforme de Vote Électronique Sécurisée. Protocole strict 1 Numéro = 1 Vote.</p>
+    </footer>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-2xl max-w-sm w-full p-6 space-y-5 border border-slate-700 text-center shadow-2xl">
+            <div class="w-12 h-12 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-question"></i>
+            </div>
+            
+            <div class="space-y-1">
+                <h4 class="text-lg font-bold text-white">Confirmer votre choix</h4>
+                <p class="text-xs text-slate-300">
+                    Voulez-vous valider votre vote pour <span id="modalCandidateTarget" class="font-bold text-indigo-400">DJILY 1</span> ?
+                </p>
+                <p class="text-[11px] text-rose-400 mt-2 italic">⚠️ Cette action est irréversible et verrouillera définitivement votre numéro.</p>
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <button onclick="closeModal()" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700">
+                    Annuler
+                </button>
+                <button id="modalConfirmBtn" onclick="submitFinalVote()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/30">
+                    Confirmer mon Vote
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // 1. CONSTANTS & AUTHORIZED NUMBERS
+        const AUTHORIZED_NUMBERS = [
+            "770000000",
+            "771111111",
+            "772222222",
+            "773333333",
+            "774444444",
+            "775555555"
+        ];
+
+        const ADMIN_PASSWORD = "1234";
+
+        // State Variables
+        let currentAuthenticatedPhone = null;
+        let selectedCandidateTarget = null;
+        let adminChartInstance = null;
+        let isAdminLoggedIn = false;
+
+        // 2. DATA MANAGEMENT (LocalStorage)
+        function getElectionState() {
+            const defaultState = {
+                voters: {
+                    "770000000": { hasVoted: false, candidate: null, timestamp: null },
+                    "771111111": { hasVoted: false, candidate: null, timestamp: null },
+                    "772222222": { hasVoted: false, candidate: null, timestamp: null },
+                    "773333333": { hasVoted: false, candidate: null, timestamp: null },
+                    "774444444": { hasVoted: false, candidate: null, timestamp: null },
+                    "775555555": { hasVoted: false, candidate: null, timestamp: null }
+                }
+            };
+
+            const saved = localStorage.getItem('evote_djily_restricted_v2');
+            if (!saved) return defaultState;
+
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.error("Erreur de chargement", e);
+                return defaultState;
+            }
+        }
+
+        function saveElectionState(state) {
+            localStorage.setItem('evote_djily_restricted_v2', JSON.stringify(state));
+        }
+
+        // 3. VOTER AUTHENTICATION FLOW
+        function handleAuthSubmit(event) {
+            event.preventDefault();
+            const phoneInput = document.getElementById('voterPhoneInput').value.trim().replace(/\s+/g, '');
+
+            // Verify if number is in white list
+            if (!AUTHORIZED_NUMBERS.includes(phoneInput)) {
+                showToast("Accès refusé : Ce numéro n'est pas autorisé à voter.", "error");
+                return;
+            }
+
+            const state = getElectionState();
+            const voterRecord = state.voters[phoneInput];
+
+            currentAuthenticatedPhone = phoneInput;
+
+            if (voterRecord && voterRecord.hasVoted) {
+                // Number has ALREADY voted
+                showAlreadyVotedScreen(phoneInput, voterRecord.timestamp);
+                showToast("Attention : Vous avez déjà voté !", "error");
+            } else {
+                // Number can vote
+                showVotingStationScreen(phoneInput);
+                showToast(`Numéro ${phoneInput} vérifié. Vous pouvez voter.`, "success");
+            }
+        }
+
+        function showVotingStationScreen(phone) {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('alreadyVotedSection').classList.add('hidden');
+            document.getElementById('votingSection').classList.remove('hidden');
+            document.getElementById('activeVoterDisplay').innerText = phone;
+        }
+
+        function showAlreadyVotedScreen(phone, timestamp) {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('votingSection').classList.add('hidden');
+            document.getElementById('alreadyVotedSection').classList.remove('hidden');
+
+            document.getElementById('votedPhoneReceipt').innerText = phone;
+            document.getElementById('votedTimeReceipt').innerText = `Vote enregistré le : ${timestamp || 'Inconnu'}`;
+        }
+
+        function logoutVoterSession() {
+            currentAuthenticatedPhone = null;
+            document.getElementById('voterPhoneInput').value = '';
+            document.getElementById('votingSection').classList.add('hidden');
+            document.getElementById('alreadyVotedSection').classList.add('hidden');
+            document.getElementById('authSection').classList.remove('hidden');
+        }
+
+        function resetVoterSession() {
+            logoutVoterSession();
+            showToast("Session fermée.", "info");
+        }
+
+        // 4. VOTING ACTIONS & CONFIRMATION MODAL
+        function confirmVote(candidateId) {
+            selectedCandidateTarget = candidateId;
+            document.getElementById('modalCandidateTarget').innerText = candidateId;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            selectedCandidateTarget = null;
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        function submitFinalVote() {
+            if (!currentAuthenticatedPhone || !selectedCandidateTarget) return;
+
+            const state = getElectionState();
+            const formattedTime = new Date().toLocaleString('fr-FR', {
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit'
+            });
+
+            // Seal the vote
+            state.voters[currentAuthenticatedPhone] = {
+                hasVoted: true,
+                candidate: selectedCandidateTarget,
+                timestamp: formattedTime
+            };
+
+            saveElectionState(state);
+            closeModal();
+
+            showToast(`Vote enregistré pour ${selectedCandidateTarget} !`, "success");
+
+            // Refresh UI state for voter
+            showAlreadyVotedScreen(currentAuthenticatedPhone, formattedTime);
+
+            // Live update admin panel if currently open
+            if (isAdminLoggedIn) {
+                updateAdminDashboardUI();
+            }
+        }
+
+        // 5. ADMIN PANEL & AUDIT LOGIC
+        function toggleAdminSection() {
+            const section = document.getElementById('adminSection');
+            section.classList.toggle('hidden');
+            if (!section.classList.contains('hidden')) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPass').value;
+
+            if (pass === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                document.getElementById('adminLoginBox').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                initAdminChart();
+                updateAdminDashboardUI();
+                showToast("Accès administrateur validé.", "info");
+            } else {
+                showToast("Mot de passe incorrect.", "error");
+            }
+        }
+
+        function logoutAdmin() {
+            isAdminLoggedIn = false;
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('adminLoginBox').classList.remove('hidden');
+        }
+
+        function initAdminChart() {
+            const ctx = document.getElementById('adminChart').getContext('2d');
+            if (adminChartInstance) adminChartInstance.destroy();
+
+            adminChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['DJILY 1', 'DJILY 2', 'DJILY 3'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#6366f1', '#a855f7', '#10b981'],
+                        borderColor: '#0f172a',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 11 } }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function updateAdminDashboardUI() {
+            const state = getElectionState();
+            const voters = state.voters;
+
+            let totalVoted = 0;
+            let countDjily1 = 0;
+            let countDjily2 = 0;
+            let countDjily3 = 0;
+
+            const tableBody = document.getElementById('voterAuditTableBody');
+            tableBody.innerHTML = '';
+
+            // Iterate over the 6 fixed voters
+            AUTHORIZED_NUMBERS.forEach(phone => {
+                const info = voters[phone] || { hasVoted: false, candidate: null, timestamp: null };
+                
+                if (info.hasVoted) {
+                    totalVoted++;
+                    if (info.candidate === 'DJILY1') countDjily1++;
+                    if (info.candidate === 'DJILY2') countDjily2++;
+                    if (info.candidate === 'DJILY3') countDjily3++;
+                }
+
+                // Append table row
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-900/50 transition-colors";
+                
+                const statusBadge = info.hasVoted 
+                    ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">A voté</span>`
+                    : `<span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-medium">En attente</span>`;
+
+                const candidateChoice = info.hasVoted
+                    ? `<span class="font-bold text-slate-200">${info.candidate}</span>`
+                    : `<span class="text-slate-600">---</span>`;
+
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-mono text-slate-200 font-semibold">${phone}</td>
+                    <td class="py-3.5 px-4 text-center">${statusBadge}</td>
+                    <td class="py-3.5 px-4 text-center">${candidateChoice}</td>
+                    <td class="py-3.5 px-4 text-right text-slate-400 font-mono text-[11px]">${info.timestamp || '---'}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // Metrics Update
+            document.getElementById('metricParticipation').innerText = `${totalVoted} / 6`;
+            const participationPct = ((totalVoted / 6) * 100).toFixed(0);
+            document.getElementById('metricParticipationPct').innerText = `${participationPct}%`;
+            document.getElementById('participationBar').style.width = `${participationPct}%`;
+
+            const pct1 = totalVoted > 0 ? ((countDjily1 / totalVoted) * 100).toFixed(1) : "0.0";
+            const pct2 = totalVoted > 0 ? ((countDjily2 / totalVoted) * 100).toFixed(1) : "0.0";
+            const pct3 = totalVoted > 0 ? ((countDjily3 / totalVoted) * 100).toFixed(1) : "0.0";
+
+            document.getElementById('metricDjily1').innerText = `${countDjily1} voix`;
+            document.getElementById('metricDjily1Pct').innerText = `${pct1}%`;
+
+            document.getElementById('metricDjily2').innerText = `${countDjily2} voix`;
+            document.getElementById('metricDjily2Pct').innerText = `${pct2}%`;
+
+            document.getElementById('metricDjily3').innerText = `${countDjily3} voix`;
+            document.getElementById('metricDjily3Pct').innerText = `${pct3}%`;
+
+            // Chart Update
+            if (adminChartInstance) {
+                adminChartInstance.data.datasets[0].data = [countDjily1, countDjily2, countDjily3];
+                adminChartInstance.update();
+            }
+
+            // Winner calculation
+            const winnerBanner = document.getElementById('winnerBanner');
+            const winnerText = document.getElementById('winnerText');
+
+            if (totalVoted > 0) {
+                winnerBanner.classList.remove('hidden');
+                const max = Math.max(countDjily1, countDjily2, countDjily3);
+                let leaders = [];
+                if (countDjily1 === max) leaders.push("DJILY 1");
+                if (countDjily2 === max) leaders.push("DJILY 2");
+                if (countDjily3 === max) leaders.push("DJILY 3");
+
+                if (leaders.length > 1) {
+                    winnerText.innerText = `Égalité actuelle entre ${leaders.join(' & ')} (${max} voix)`;
+                } else {
+                    winnerText.innerText = `🏆 Leader actuel : ${leaders[0]} avec ${max} voix (${((max/totalVoted)*100).toFixed(1)}%)`;
+                }
+            } else {
+                winnerBanner.classList.add('hidden');
+            }
+        }
+
+        function resetElectionData() {
+            if (confirm("Réinitialiser l'ensemble des suffrages des 6 électeurs à zéro ?")) {
+                localStorage.removeItem('evote_djily_restricted_v2');
+                updateAdminDashboardUI();
+                showToast("Élection réinitialisée.", "info");
+            }
+        }
+
+        function exportAuditReport() {
+            const state = getElectionState();
+            let text = `==================================================\n`;
+            text += `    PROCÈS-VERBAL D'ÉLECTION - E-VOTE DJILY\n`;
+            text += `==================================================\n`;
+            text += `Date d'exportation : ${new Date().toLocaleString('fr-FR')}\n\n`;
+
+            AUTHORIZED_NUMBERS.forEach(phone => {
+                const info = state.voters[phone];
+                text += `Numéro : ${phone} | Statut : ${info.hasVoted ? 'A VOTÉ (' + info.candidate + ')' : 'N\'A PAS VOTÉ'} | Date : ${info.timestamp || 'N/A'}\n`;
+            });
+
+            text += `\n==================================================\n`;
+
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `PV_Election_DJILY_${new Date().toISOString().slice(0,10)}.txt`;
+            a.click();
+            showToast("PV téléchargé.", "success");
+        }
+
+        // 6. TOAST NOTIFICATION SYSTEM
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            const bgClass = type === 'error' ? 'bg-rose-600' : (type === 'success' ? 'bg-emerald-600' : 'bg-indigo-600');
+            const icon = type === 'error' ? 'fa-circle-xmark' : 'fa-circle-check';
+
+            toast.className = `px-4 py-3 rounded-xl shadow-2xl ${bgClass} text-white text-xs font-semibold transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2.5 border border-white/10 pointer-events-auto`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-sm"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
