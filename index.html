@@ -3,315 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plateforme de Vote - ASC Pout Diack</title>
-    <!-- Tailwind CSS CDN pour un design moderne -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configuration des couleurs et suppression du badge Netlify -->
-    <style>
-        /* Masquer le badge et les éléments Netlify injectés */
-        #netlify-badge, 
-        [data-netlify-badge], 
-        .netlify-badge,
-        footer[data-netlify],
-        iframe[src*="netlify"] {
-            display: none !important;
-            visibility: hidden !important;
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-    </style>
-    <!-- Firebase SDKs (v8) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-</head>
-<body class="min-h-screen flex flex-col justify-between p-4 sm:p-6">
-
-    <!-- En-tête -->
-    <header class="text-center my-6">
-        <h1 class="text-2xl sm:text-3xl font-extrabold text-blue-400 tracking-wide">ASC POUT DIACK</h1>
-        <p class="text-sm sm:text-base text-slate-400 mt-1">Scrutin sécurisé restreint aux 10 votants répertoriés (1 à 10)</p>
-    </header>
-
-    <!-- Conteneur Principal -->
-    <main class="max-w-md w-full mx-auto bg-slate-800/90 border border-slate-700/60 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-sm">
-        
-        <!-- ÉCRAN 1 : Auth Électeur -->
-        <section id="sec-login" class="space-y-5">
-            <div class="text-center">
-                <h2 class="text-xl font-bold text-white">Authentification Électeur</h2>
-                <p class="text-xs text-slate-400 mt-1">Veuillez saisir votre numéro d'identifiant attribué (de 1 à 10) pour accéder au vote.</p>
-            </div>
-
-            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-medium text-slate-300 mb-2">Saisissez votre numéro d'électeur (1 à 10) :</label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🆔</span>
-                        <input type="number" id="voter-id" min="1" max="10" required placeholder="Ex: 1" 
-                               class="w-full pl-10 pr-4 py-3 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-semibold">
-                    </div>
-                </div>
-
-                <button type="submit" id="btn-login" class="w-full py-3.5 px-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 font-bold rounded-xl text-white transition-all duration-200 shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2">
-                    Accéder au Vote &rarr;
-                </button>
-            </form>
-
-            <div id="msg-login" class="hidden p-3.5 rounded-xl text-xs font-semibold border text-center"></div>
-        </section>
-
-        <!-- ÉCRAN 2 : Bulletin de Vote -->
-        <section id="sec-vote" class="hidden space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <span class="text-xs font-medium text-blue-400 bg-blue-950/60 border border-blue-800/50 px-3 py-1 rounded-full" id="voter-badge">Électeur #--</span>
-                <button onclick="logout()" class="text-xs text-slate-400 hover:text-white underline">Déconnexion</button>
-            </div>
-
-            <div class="text-center">
-                <h2 class="text-xl font-bold text-white">Faites votre choix</h2>
-                <p class="text-xs text-slate-400 mt-1">Sélectionnez votre candidat puis validez votre bulletin.</p>
-            </div>
-
-            <form id="form-vote" onsubmit="handleVote(event)" class="space-y-3">
-                <!-- Option Candidat A -->
-                <label class="flex items-center p-4 bg-slate-900/60 border border-slate-700 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
-                    <input type="radio" name="candidate" value="Candidat_A" required class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-slate-700 bg-slate-800">
-                    <span class="ml-3 font-semibold text-white">Candidat A</span>
-                </label>
-
-                <!-- Option Candidat B -->
-                <label class="flex items-center p-4 bg-slate-900/60 border border-slate-700 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
-                    <input type="radio" name="candidate" value="Candidat_B" required class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-slate-700 bg-slate-800">
-                    <span class="ml-3 font-semibold text-white">Candidat B</span>
-                </label>
-
-                <!-- Option Vote Blanc -->
-                <label class="flex items-center p-4 bg-slate-900/60 border border-slate-700 rounded-xl cursor-pointer hover:border-blue-500 transition-all">
-                    <input type="radio" name="candidate" value="Blanc" required class="w-5 h-5 text-blue-600 focus:ring-blue-500 border-slate-700 bg-slate-800">
-                    <span class="ml-3 font-medium text-slate-400">Vote Blanc</span>
-                </label>
-
-                <button type="submit" id="btn-submit-vote" class="w-full mt-4 py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 font-bold rounded-xl text-white transition-all duration-200 shadow-lg shadow-emerald-600/30">
-                    Confirmer mon Vote 🗳️
-                </button>
-            </form>
-        </section>
-
-        <!-- ÉCRAN 3 : Confirmation -->
-        <section id="sec-thanks" class="hidden text-center py-6 space-y-4">
-            <div class="w-16 h-16 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-full flex items-center justify-center mx-auto text-3xl">
-                ✓
-            </div>
-            <h2 class="text-2xl font-bold text-white">A voté !</h2>
-            <p class="text-sm text-slate-300">Votre bulletin a été enregistré avec succès et en toute confidentialité.</p>
-            <p class="text-xs text-slate-500">Merci pour votre participation au scrutin de l'ASC Pout Diack.</p>
-        </section>
-
-        <!-- ÉCRAN 4 : Panneau Administration -->
-        <section id="sec-admin" class="hidden space-y-6">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
-                <h2 class="text-lg font-bold text-amber-400">Espace Administration</h2>
-                <button onclick="closeAdmin()" class="text-xs text-slate-400 hover:text-white underline">Fermer</button>
-            </div>
-
-            <!-- Form Auth Admin -->
-            <div id="admin-login-box" class="space-y-4">
-                <label class="block text-xs font-medium text-slate-300">Code d'accès Administrateur :</label>
-                <input type="password" id="admin-pass" placeholder="Entrez le mot de passe" class="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
-                <button onclick="checkAdminPass()" class="w-full py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold rounded-xl transition-all">Connexion Admin</button>
-            </div>
-
-            <!-- Dashboard Résultats -->
-            <div id="admin-dashboard" class="hidden space-y-6">
-                <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-700/80 space-y-3">
-                    <h3 class="text-sm font-semibold text-slate-300 border-b border-slate-800 pb-2">Résultats en Direct</h3>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-300">Candidat A :</span>
-                        <span id="res-cand-a" class="font-bold text-blue-400">0 vote(s)</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-300">Candidat B :</span>
-                        <span id="res-cand-b" class="font-bold text-emerald-400">0 vote(s)</span>
-                    </div>
-                    <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-300">Votes Blancs :</span>
-                        <span id="res-blanc" class="font-bold text-slate-400">0 vote(s)</span>
-                    </div>
-                    <div class="border-t border-slate-800 pt-2 flex justify-between items-center text-sm font-bold">
-                        <span class="text-white">Total Votants :</span>
-                        <span id="res-total" class="text-amber-400">0 / 10</span>
-                    </div>
-                </div>
-
-                <!-- Action Réinitialisation -->
-                <button onclick="resetElection()" class="w-full py-3 bg-red-600/20 hover:bg-red-600/40 border border-red-500/40 text-red-300 font-bold rounded-xl transition-all text-xs">
-                    ⚠️ Réinitialiser l'élection (Remise à zéro)
-                </button>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Pied de page -->
-    <footer class="text-center my-6 text-xs text-slate-500 space-y-2">
-        <p>&copy; 2026 ASC Pout Diack — Tous droits réservés.</p>
-        <button onclick="openAdmin()" class="text-slate-600 hover:text-slate-400 underline">Administration</button>
-    </footer>
-
-    <!-- Script JavaScript & Configuration Firebase -->
-    <script>
-        // 1. Remplacez ci-dessous avec les clés de votre console Firebase
-        const firebaseConfig = {
-            apiKey: "VOTRE_API_KEY",
-            authDomain: "election-djily.firebaseapp.com",
-            databaseURL: "https://election-djily-default-rtdb.firebaseio.com",
-            projectId: "election-djily",
-            storageBucket: "election-djily.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:1234567890"
-        };
-
-        // Initialisation Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
-
-        let currentVoterId = null;
-
-        // Éléments DOM
-        const secLogin = document.getElementById('sec-login');
-        const secVote = document.getElementById('sec-vote');
-        const secThanks = document.getElementById('sec-thanks');
-        const secAdmin = document.getElementById('sec-admin');
-        const msgLogin = document.getElementById('msg-login');
-
-        // Connexion Électeur
-        function handleLogin(e) {
-            e.preventDefault();
-            const idInput = document.getElementById('voter-id').value;
-            const voterNum = parseInt(idInput, 10);
-
-            if (isNaN(voterNum) || voterNum < 1 || voterNum > 10) {
-                showLoginError("Veuillez saisir un numéro d'électeur valide (entre 1 et 10).");
-                return;
-            }
-
-            // Vérification dans Firebase
-            db.ref('voters/voter_' + voterNum).once('value').then((snapshot) => {
-                const voterData = snapshot.val();
-                if (voterData && voterData.hasVoted) {
-                    showLoginError(`Le numéro ${voterNum} a DÉJÀ VOTÉ ! Un deuxième vote n'est pas autorisé.`);
-                } else {
-                    currentVoterId = voterNum;
-                    document.getElementById('voter-badge').innerText = `Électeur #${voterNum}`;
-                    secLogin.classList.add('hidden');
-                    secVote.classList.remove('hidden');
-                    msgLogin.classList.add('hidden');
-                }
-            }).catch((err) => {
-                showLoginError("Erreur de connexion au serveur : " + err.message);
-            });
-        }
-
-        function showLoginError(msg) {
-            msgLogin.innerText = msg;
-            msgLogin.className = "p-3.5 rounded-xl text-xs font-semibold border text-center bg-red-950/60 border-red-800/80 text-red-300";
-            msgLogin.classList.remove('hidden');
-        }
-
-        // Soumission du Vote
-        function handleVote(e) {
-            e.preventDefault();
-            const selected = document.querySelector('input[name="candidate"]:checked');
-            if (!selected || !currentVoterId) return;
-
-            const choice = selected.value;
-
-            // Enregistrement anonyme du vote & mise à jour du statut
-            const updates = {};
-            updates['voters/voter_' + currentVoterId + '/hasVoted'] = true;
-            updates['votes/' + Date.now()] = choice;
-
-            db.ref().update(updates).then(() => {
-                secVote.classList.add('hidden');
-                secThanks.classList.remove('hidden');
-            }).catch((err) => {
-                alert("Erreur lors de l'enregistrement du vote : " + err.message);
-            });
-        }
-
-        function logout() {
-            currentVoterId = null;
-            document.getElementById('form-login').reset();
-            secVote.classList.add('hidden');
-            secLogin.classList.remove('hidden');
-        }
-
-        // ESPACE ADMIN
-        function openAdmin() {
-            secLogin.classList.add('hidden');
-            secVote.classList.add('hidden');
-            secThanks.classList.add('hidden');
-            secAdmin.classList.remove('hidden');
-        }
-
-        function closeAdmin() {
-            secAdmin.classList.add('hidden');
-            secLogin.classList.remove('hidden');
-        }
-
-        function checkAdminPass() {
-            const pass = document.getElementById('admin-pass').value;
-            // Mot de passe admin par défaut
-            if (pass === "admin123") {
-                document.getElementById('admin-login-box').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                listenToResults();
-            } else {
-                alert("Mot de passe incorrect.");
-            }
-        }
-
-        function listenToResults() {
-            db.ref('votes').on('value', (snapshot) => {
-                const votes = snapshot.val() || {};
-                let candA = 0, candB = 0, blanc = 0, total = 0;
-
-                Object.values(votes).forEach(val => {
-                    total++;
-                    if (val === 'Candidat_A') candA++;
-                    else if (val === 'Candidat_B') candB++;
-                    else if (val === 'Blanc') blanc++;
-                });
-
-                document.getElementById('res-cand-a').innerText = `${candA} vote(s)`;
-                document.getElementById('res-cand-b').innerText = `${candB} vote(s)`;
-                document.getElementById('res-blanc').innerText = `${blanc} vote(s)`;
-                document.getElementById('res-total').innerText = `${total} / 10`;
-            });
-        }
-
-        function resetElection() {
-            if (confirm("Voulez-vous vraiment réinitialiser l'élection ? Tous les votes seront effacés.")) {
-                db.ref('votes').remove();
-                db.ref('voters').remove();
-                alert("L'élection a été réinitialisée avec succès.");
-            }
-        }
-    </script>
-</body>
-</html><!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Vote DJILY - Élection Sécurisée</title>
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -355,6 +46,7 @@
             margin-bottom: 25px;
             width: 100%;
             max-width: 700px;
+            position: relative;
         }
 
         .header h1 {
@@ -372,26 +64,40 @@
             font-size: 0.95rem;
             margin-top: 6px;
         }
-        .btn-admin-header {
-    background: #334155;
-    color: #94a3b8;
-    border: 1px solid #475569;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-}
 
-.btn-admin-header:hover {
-    color: #ffffff;
-    background: var(--primary);
-    border-color: var(--primary);
-}
+        .admin-header-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #334155;
+            color: #94a3b8;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .admin-header-btn:hover {
+            color: white;
+            background: #475569;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .admin-header-btn {
+                position: static;
+                margin-top: 10px;
+            }
+        }
 
         .container {
             width: 100%;
@@ -533,27 +239,6 @@
             border: 1px solid var(--danger);
         }
 
-        .admin-trigger {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            background: #334155;
-            color: #94a3b8;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .admin-trigger:hover {
-            color: white;
-            background: #475569;
-        }
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -647,18 +332,13 @@
 </head>
 <body>
 
-   <div class="header">
-    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <div>
-            <h1><i class="fa-solid fa-check-to-slot" style="color: var(--primary);"></i> Élection Numérique</h1>
-            <p>Scrutin sécurisé restreint aux 10 votants répertoriés (1 à 10)</p>
-        </div>
-        <!-- Bouton Admin remonté dans l'en-tête -->
-        <button class="btn-admin-header" onclick="ouvrirModalAdmin()">
-            <i class="fa-solid fa-lock"></i> Admin
+    <div class="header">
+        <button class="admin-header-btn" onclick="ouvrirModalAdmin()">
+            <i class="fa-solid fa-lock"></i> Administration
         </button>
+        <h1><i class="fa-solid fa-check-to-slot" style="color: var(--primary);"></i> Élection Numérique</h1>
+        <p>Scrutin sécurisé restreint aux 10 votants répertoriés (1 à 10)</p>
     </div>
-</div>
 
     <div class="container">
         <!-- ETAPE 1: AUTHENTIFICATION -->
@@ -725,7 +405,24 @@
         </div>
     </div>
 
-             
+    <!-- MODAL ADMIN -->
+    <div id="adminModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="fermerModalAdmin()">&times;</button>
+            <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-user-shield" style="color: var(--primary);"></i> Espace Administrateur</h2>
+
+            <div id="adminLoginForm">
+                <div class="form-group">
+                    <label for="adminPass">Code d'accès administrateur :</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-key"></i>
+                        <input type="password" id="adminPass" placeholder="Mot de passe (Défaut: 1234)">
+                    </div>
+                </div>
+                <button class="btn" onclick="connexionAdmin()">Déverrouiller le Dépouillement</button>
+                <div id="adminAlert" class="alert alert-error"></div>
+            </div>
+
             <div id="adminPanel" style="display: none;">
                 <div class="stats-grid">
                     <div class="stat-card">
