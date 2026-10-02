@@ -318,10 +318,18 @@
 </head>
 <body>
 
-    <div class="header">
-        <h1><i class="fa-solid fa-check-to-slot" style="color: var(--primary);"></i> Élection Numérique</h1>
-        <p>Scrutin sécurisé restreint aux 10 votants répertoriés (1 à 10)</p>
+   <div class="header">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div>
+            <h1><i class="fa-solid fa-check-to-slot" style="color: var(--primary);"></i> Élection Numérique</h1>
+            <p>Scrutin sécurisé restreint aux 10 votants répertoriés (1 à 10)</p>
+        </div>
+        <!-- Bouton Admin remonté dans l'en-tête -->
+        <button class="btn-admin-header" onclick="ouvrirModalAdmin()">
+            <i class="fa-solid fa-lock"></i> Admin
+        </button>
     </div>
+</div>
 
     <div class="container">
         <!-- ETAPE 1: AUTHENTIFICATION -->
