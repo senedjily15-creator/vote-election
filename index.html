@@ -12,12 +12,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- 
+
     <!-- SDKs Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
- 
+
     <style>
         :root {
             --primary: #4f46e5;
@@ -26,14 +26,14 @@
             --danger: #ef4444;
             --radius: 16px;
         }
- 
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
             font-family: 'Poppins', sans-serif;
         }
- 
+
         body {
             background-color: #0f172a;
             color: #f8fafc;
@@ -43,7 +43,7 @@
             align-items: center;
             padding: 20px 15px 50px 15px;
         }
- 
+
         .header {
             text-align: center;
             margin-bottom: 25px;
@@ -51,7 +51,7 @@
             max-width: 700px;
             position: relative;
         }
- 
+
         .header h1 {
             font-size: 2rem;
             color: #ffffff;
@@ -61,13 +61,13 @@
             justify-content: center;
             gap: 12px;
         }
- 
+
         .header p {
             color: #94a3b8;
             font-size: 0.95rem;
             margin-top: 6px;
         }
- 
+
         .admin-header-btn {
             position: absolute;
             top: 0;
@@ -84,12 +84,12 @@
             gap: 6px;
             transition: all 0.2s ease;
         }
- 
+
         .admin-header-btn:hover {
             color: white;
             background: #475569;
         }
- 
+
         @media (max-width: 600px) {
             .header {
                 display: flex;
@@ -101,7 +101,7 @@
                 margin-top: 10px;
             }
         }
- 
+
         .container {
             width: 100%;
             max-width: 700px;
@@ -112,12 +112,12 @@
             border: 1px solid #334155;
             margin-bottom: 25px;
         }
- 
+
         .step-card { display: none; }
         .step-card.active { display: block; }
- 
+
         .form-group { margin-bottom: 20px; }
- 
+
         label {
             display: block;
             margin-bottom: 8px;
@@ -125,9 +125,9 @@
             color: #cbd5e1;
             font-size: 0.9rem;
         }
- 
+
         .input-with-icon { position: relative; }
- 
+
         .input-with-icon i {
             position: absolute;
             left: 15px;
@@ -135,7 +135,7 @@
             transform: translateY(-50%);
             color: #64748b;
         }
- 
+
         input[type="text"], input[type="password"], input[type="email"] {
             width: 100%;
             padding: 14px 15px 14px 45px;
@@ -147,11 +147,11 @@
             color: white;
             transition: all 0.2s;
         }
- 
+
         input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
             border-color: var(--primary);
         }
- 
+
         .btn {
             width: 100%;
             padding: 14px;
@@ -168,17 +168,17 @@
             justify-content: center;
             gap: 8px;
         }
- 
+
         .btn:hover { background-color: var(--primary-hover); }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
- 
+
         .candidates-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
- 
+
         .candidate-card {
             border: 1px solid #334155;
             border-radius: 12px;
@@ -186,7 +186,7 @@
             text-align: center;
             background: #0f172a;
         }
- 
+
         .candidate-avatar {
             width: 120px;
             height: 120px;
@@ -202,29 +202,29 @@
             font-weight: 700;
             border: 3px solid #334155;
         }
- 
+
         .candidate-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
- 
+
         .candidate-name {
             font-size: 1.1rem;
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 12px;
         }
- 
+
         .btn-vote {
             background-color: var(--success);
             padding: 10px 16px;
             font-size: 0.9rem;
         }
- 
+
         .btn-vote:hover { background-color: #059669; }
- 
+
         .btn-mini {
             width: auto;
             padding: 5px 10px;
@@ -232,7 +232,7 @@
             background-color: #334155;
             border-radius: 6px;
         }
- 
+
         .alert {
             padding: 12px 16px;
             border-radius: 8px;
@@ -240,13 +240,13 @@
             margin-top: 15px;
             display: none;
         }
- 
+
         .alert-error {
             background-color: rgba(239, 68, 68, 0.2);
             color: #fca5a5;
             border: 1px solid var(--danger);
         }
- 
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -257,7 +257,7 @@
             align-items: center;
             padding: 15px;
         }
- 
+
         .modal-content {
             background: #1e293b;
             border: 1px solid #334155;
@@ -269,7 +269,7 @@
             padding: 25px;
             position: relative;
         }
- 
+
         .modal-close {
             position: absolute;
             top: 15px;
@@ -280,14 +280,14 @@
             font-size: 1.5rem;
             cursor: pointer;
         }
- 
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
- 
+
         .stat-card {
             background: #0f172a;
             border: 1px solid #334155;
@@ -295,31 +295,31 @@
             border-radius: 10px;
             text-align: center;
         }
- 
+
         .stat-value {
             font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary);
         }
- 
+
         .voters-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
             font-size: 0.85rem;
         }
- 
+
         .voters-table th, .voters-table td {
             padding: 10px 12px;
             text-align: left;
             border-bottom: 1px solid #334155;
         }
- 
+
         .voters-table th {
             background-color: #0f172a;
             color: #94a3b8;
         }
- 
+
         .badge {
             display: inline-block;
             padding: 4px 8px;
@@ -327,23 +327,23 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
- 
+
         .badge-success { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
         .badge-danger { background-color: rgba(239, 68, 68, 0.2); color: #fca5a5; }
         .badge-info { background-color: rgba(79, 70, 229, 0.25); color: #a5b4fc; }
- 
+
         .chart-container {
             position: relative;
             height: 220px;
             margin-bottom: 25px;
         }
- 
+
         .confirm-box { text-align: center; }
         .confirm-box .btn + .btn { margin-top: 10px; background-color: #334155; }
     </style>
 </head>
 <body>
- 
+
     <div class="header">
         <button class="admin-header-btn" onclick="ouvrirModalAdmin()">
             <i class="fa-solid fa-lock"></i> Administration
@@ -351,7 +351,7 @@
         <h1><i class="fa-solid fa-check-to-slot" style="color: var(--primary);"></i> Élection Numérique</h1>
         <p>Scrutin sécurisé restreint aux 10 votants répertoriés (1 à 10)</p>
     </div>
- 
+
     <div class="container">
         <!-- ETAPE 1: AUTHENTIFICATION -->
         <div id="step-auth" class="step-card active">
@@ -359,7 +359,7 @@
             <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">
                 Veuillez saisir votre numéro d'identifiant attribué (de 1 à 10) pour accéder au vote.
             </p>
- 
+
             <div class="form-group">
                 <label for="voterNumInput">Saisissez votre numéro d'électeur (1 à 10) :</label>
                 <div class="input-with-icon">
@@ -367,14 +367,14 @@
                     <input type="text" id="voterNumInput" inputmode="numeric" maxlength="2" placeholder="Exemple : 1, 2, 3..." autocomplete="off">
                 </div>
             </div>
- 
+
             <button class="btn" id="btnAuth" onclick="verifierElecteur()">
                 Accéder au Vote <i class="fa-solid fa-arrow-right"></i>
             </button>
- 
+
             <div id="authAlert" class="alert alert-error"></div>
         </div>
- 
+
         <!-- ETAPE 2: ISOLOIR -->
         <div id="step-vote" class="step-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -384,11 +384,11 @@
             <p style="color: #94a3b8; font-size: 0.9rem;">
                 Choisissez un candidat. Votre choix est unique et définitif.
             </p>
- 
+
             <div class="candidates-grid" id="candidatesGrid"></div>
             <div id="voteAlert" class="alert alert-error"></div>
         </div>
- 
+
         <!-- ETAPE 3: CONFIRMATION -->
         <div id="step-confirm" class="step-card" style="text-align: center;">
             <i class="fa-solid fa-circle-check" style="font-size: 4rem; color: var(--success); margin-bottom: 15px;"></i>
@@ -401,7 +401,7 @@
             </button>
         </div>
     </div>
- 
+
     <!-- MODAL CONFIRMATION DU VOTE -->
     <div id="confirmModal" class="modal-overlay">
         <div class="modal-content confirm-box" style="max-width: 420px;">
@@ -413,13 +413,13 @@
             <button class="btn" onclick="annulerConfirmation()">Changer de choix</button>
         </div>
     </div>
- 
+
     <!-- MODAL ADMIN -->
     <div id="adminModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="fermerModalAdmin()">&times;</button>
             <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-user-shield" style="color: var(--primary);"></i> Espace Administrateur</h2>
- 
+
             <div id="adminLoginForm">
                 <div class="form-group">
                     <label for="adminEmail">Adresse e-mail administrateur :</label>
@@ -438,7 +438,7 @@
                 <button class="btn" onclick="connexionAdmin()">Déverrouiller le Dépouillement</button>
                 <div id="adminAlert" class="alert alert-error"></div>
             </div>
- 
+
             <div id="adminPanel" style="display: none;">
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -454,17 +454,17 @@
                         <div style="font-size: 0.75rem; color: #94a3b8;">PARTICIPATION</div>
                     </div>
                 </div>
- 
+
                 <div class="chart-container">
                     <canvas id="resultsChart"></canvas>
                 </div>
- 
+
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
                     <span style="font-size: 0.9rem; color: #94a3b8;">Vote en ligne : <strong id="statOpen" style="color: #fff;">ouvert</strong></span>
                     <button class="btn btn-mini" id="btnToggle" onclick="basculerScrutin()">Fermer le vote en ligne</button>
                 </div>
                 <div id="panelAlert" class="alert alert-error"></div>
- 
+
                 <h3 style="font-size: 1rem; margin-top: 20px; margin-bottom: 10px;">Émargement Synchronisé (10 Électeurs)</h3>
                 <p style="font-size: 0.78rem; color: #94a3b8;">Si un électeur a voté en présentiel, cliquez sur « Présentiel » : son numéro sera bloqué en ligne (définitif).</p>
                 <div style="overflow-x: auto;">
@@ -481,7 +481,7 @@
                         <tbody id="votersTableBody"></tbody>
                     </table>
                 </div>
- 
+
                 <button class="btn" style="background-color: var(--danger); margin-top: 20px;" onclick="reinitialiserToutesLesDonnees()">
                     <i class="fa-solid fa-trash-can"></i> Réinitialiser l'Élection
                 </button>
@@ -491,31 +491,31 @@
             </div>
         </div>
     </div>
- 
+
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyAyTrxbYeeoQaeErQgPssO_SVGqwfuxXc",
+            apiKey: "AIzaSyAyTrxbYeeoQaeErQgPssO_SVGqwqfuxXc",
             authDomain: "election-djily.firebaseapp.com",
             databaseURL: "https://election-djily-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "election-djily",
             storageBucket: "election-djily.firebasestorage.app",
             messagingSenderId: "57085925172",
-            appId: "1:57085925172:web:60bc57bc4877adfaef5901"
+            appId: "1:57085925172:web:b0003226da767657cab761"
         };
- 
+
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const auth = firebase.auth();
- 
+
         const AUTORIZED_NUMBERS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
- 
+
         // Candidats : modifiez les noms et les chemins des photos ici (dossier "img" sur GitHub)
         const CANDIDATS = [
             { id: 'DJILY1', nom: 'DJILY 1', init: 'D1', photo: 'img/djily1.jpg', color: '#4f46e5' },
             { id: 'DJILY2', nom: 'DJILY 2', init: 'D2', photo: 'img/djily2.jpg', color: '#06b6d4' },
             { id: 'DJILY3', nom: 'DJILY 3', init: 'D3', photo: 'img/djily3.jpg', color: '#10b981' }
         ];
- 
+
         let currentVoter = null;
         let chartInstance = null;
         let candidatEnAttente = null;
@@ -525,7 +525,7 @@
         let ecouteurs = [];
         let votersData = {};
         let scrutinFerme = false;
- 
+
         /* ---------- Affichage des candidats (avec photos) ---------- */
         function afficherCandidats() {
             const grid = document.getElementById('candidatesGrid');
@@ -533,7 +533,7 @@
             CANDIDATS.forEach(c => {
                 const card = document.createElement('div');
                 card.className = 'candidate-card';
- 
+
                 const av = document.createElement('div');
                 av.className = 'candidate-avatar';
                 const img = new Image();
@@ -541,22 +541,22 @@
                 img.onerror = () => { img.remove(); av.textContent = c.init; };
                 img.src = c.photo;
                 av.appendChild(img);
- 
+
                 const nm = document.createElement('div');
                 nm.className = 'candidate-name';
                 nm.textContent = c.nom;
- 
+
                 const bt = document.createElement('button');
                 bt.className = 'btn btn-vote';
                 bt.textContent = 'Voter';
                 bt.onclick = () => demanderConfirmation(c);
- 
+
                 card.append(av, nm, bt);
                 grid.appendChild(card);
             });
         }
         afficherCandidats();
- 
+
         /* ---------- Authentification électeur ---------- */
         document.getElementById('voterNumInput').addEventListener('input', e => {
             e.target.value = e.target.value.replace(/\D/g, '').slice(0, 2);
@@ -564,30 +564,30 @@
         document.getElementById('voterNumInput').addEventListener('keydown', e => {
             if (e.key === 'Enter') verifierElecteur();
         });
- 
+
         async function verifierElecteur() {
             const inputVal = document.getElementById('voterNumInput').value.trim();
             const alertBox = document.getElementById('authAlert');
             alertBox.style.display = 'none';
- 
+
             const attente = Math.ceil((verrouJusqua - Date.now()) / 1000);
             if (attente > 0) {
                 showAlert('authAlert', 'Trop de tentatives. Réessayez dans ' + attente + ' secondes.');
                 return;
             }
- 
+
             if (!inputVal) {
                 showAlert('authAlert', 'Veuillez saisir votre numéro d\'électeur (1 à 10).');
                 return;
             }
- 
+
             if (!AUTORIZED_NUMBERS.includes(inputVal)) {
                 echecs++;
                 if (echecs >= 5) verrouJusqua = Date.now() + 30000;
                 showAlert('authAlert', 'Accès refusé. Numéro non valide (Saisissez un chiffre entre 1 et 10).');
                 return;
             }
- 
+
             const btn = document.getElementById('btnAuth');
             btn.disabled = true;
             try {
@@ -595,17 +595,17 @@
                     database.ref('voted/' + inputVal).once('value'),
                     database.ref('config/closed').once('value')
                 ]);
- 
+
                 if (dejaVote.exists()) {
                     showAlert('authAlert', 'Le numéro ' + inputVal + ' a DÉJÀ VOTÉ (en ligne ou en présentiel) ! Un deuxième vote n\'est pas autorisé.');
                     return;
                 }
- 
+
                 if (ferme.val() === true) {
                     showAlert('authAlert', 'Le vote en ligne est fermé.');
                     return;
                 }
- 
+
                 echecs = 0;
                 currentVoter = inputVal;
                 document.getElementById('currentUserBadge').innerText = "Électeur N° " + currentVoter;
@@ -617,7 +617,7 @@
                 btn.disabled = false;
             }
         }
- 
+
         /* Retour automatique à l'accueil après 2 minutes sans action */
         function demarrerInactivite() {
             clearTimeout(idleTimer);
@@ -627,7 +627,7 @@
                 showAlert('authAlert', 'Session expirée par sécurité. Veuillez vous réauthentifier.');
             }, 120000);
         }
- 
+
         /* ---------- Vote ---------- */
         function demanderConfirmation(candidat) {
             if (!currentVoter) return;
@@ -636,19 +636,19 @@
             document.getElementById('confirmModal').style.display = 'flex';
             demarrerInactivite();
         }
- 
+
         function annulerConfirmation() {
             candidatEnAttente = null;
             document.getElementById('confirmModal').style.display = 'none';
         }
- 
+
         document.getElementById('btnConfirmVote').onclick = () => {
             if (candidatEnAttente) voterPour(candidatEnAttente.id);
         };
- 
+
         async function voterPour(candidat) {
             if (!currentVoter || !CANDIDATS.some(c => c.id === candidat)) return;
- 
+
             const btn = document.getElementById('btnConfirmVote');
             btn.disabled = true;
             try {
@@ -662,7 +662,7 @@
                 };
                 // Écriture atomique : les deux enregistrements passent ensemble ou pas du tout
                 await database.ref().update(maj);
- 
+
                 clearTimeout(idleTimer);
                 annulerConfirmation();
                 commuterEtape('step-confirm');
@@ -673,12 +673,12 @@
                 btn.disabled = false;
             }
         }
- 
+
         function commuterEtape(stepId) {
             document.querySelectorAll('.step-card').forEach(card => card.classList.remove('active'));
             document.getElementById(stepId).classList.add('active');
         }
- 
+
         function revenirAccueil() {
             clearTimeout(idleTimer);
             document.getElementById('voterNumInput').value = '';
@@ -687,23 +687,23 @@
             candidatEnAttente = null;
             commuterEtape('step-auth');
         }
- 
+
         function showAlert(elementId, message) {
             const el = document.getElementById(elementId);
             el.innerText = message;
             el.style.display = 'block';
         }
- 
+
         /* ---------- Administration (compte Firebase, plus de mot de passe dans le code) ---------- */
         function ouvrirModalAdmin() {
             document.getElementById('adminModal').style.display = 'flex';
         }
- 
+
         function fermerModalAdmin() {
             document.getElementById('adminModal').style.display = 'none';
             auth.signOut();
         }
- 
+
         async function connexionAdmin() {
             document.getElementById('adminAlert').style.display = 'none';
             const email = document.getElementById('adminEmail').value.trim();
@@ -712,10 +712,17 @@
                 await auth.signInWithEmailAndPassword(email, pass);
                 document.getElementById('adminPass').value = '';
             } catch (err) {
-                showAlert('adminAlert', 'Identifiants administrateur incorrects.');
+                const code = (err && err.code) ? err.code : 'inconnu';
+                const aide = (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-login-credentials')
+                    ? 'E-mail ou mot de passe incorrect.'
+                    : code === 'auth/operation-not-allowed' ? 'Connexion e-mail/mot de passe non activée dans Firebase.'
+                    : code === 'auth/network-request-failed' ? 'Problème de réseau.'
+                    : code === 'auth/too-many-requests' ? 'Trop d\'essais, patientez quelques minutes.'
+                    : 'Erreur de connexion.';
+                showAlert('adminAlert', aide + ' (' + code + ')');
             }
         }
- 
+
         auth.onAuthStateChanged(user => {
             ecouteurs.forEach(f => f());
             ecouteurs = [];
@@ -728,7 +735,7 @@
             initChart();
             ecouterVotesEnTempsReel();
         });
- 
+
         function initChart() {
             if (chartInstance) return;
             const ctx = document.getElementById('resultsChart').getContext('2d');
@@ -748,7 +755,7 @@
                 }
             });
         }
- 
+
         function ecouterVotesEnTempsReel() {
             const refVoters = database.ref('voters');
             const cb = refVoters.on('value', (snapshot) => {
@@ -758,7 +765,7 @@
                 showAlert('panelAlert', 'Accès refusé : ce compte n\'est pas administrateur.');
             });
             ecouteurs.push(() => refVoters.off('value', cb));
- 
+
             const refCfg = database.ref('config/closed');
             const cb2 = refCfg.on('value', (s) => {
                 scrutinFerme = s.val() === true;
@@ -767,13 +774,13 @@
             });
             ecouteurs.push(() => refCfg.off('value', cb2));
         }
- 
+
         function afficherResultats() {
             let votesCount = {};
             CANDIDATS.forEach(c => votesCount[c.id] = 0);
             let totalVotes = 0;
             let enLigne = 0;
- 
+
             AUTORIZED_NUMBERS.forEach(num => {
                 const info = votersData[num];
                 if (info && info.hasVoted && info.choice) {
@@ -784,28 +791,28 @@
                     }
                 }
             });
- 
+
             if (chartInstance) {
                 chartInstance.data.datasets[0].data = CANDIDATS.map(c => votesCount[c.id]);
                 chartInstance.update();
             }
- 
+
             document.getElementById('statTotalVotes').innerText = totalVotes + " / 10";
             document.getElementById('statOnline').innerText = enLigne;
             document.getElementById('statParticipation').innerText = Math.round((totalVotes / 10) * 100) + "%";
- 
+
             const tbody = document.getElementById('votersTableBody');
             tbody.innerHTML = '';
- 
+
             AUTORIZED_NUMBERS.forEach(num => {
                 const info = votersData[num];
                 const tr = document.createElement('tr');
- 
+
                 const tdNum = document.createElement('td');
                 const strong = document.createElement('strong');
                 strong.textContent = 'N° ' + num;
                 tdNum.appendChild(strong);
- 
+
                 const tdStatut = document.createElement('td');
                 const badge = document.createElement('span');
                 const aVote = info && info.hasVoted;
@@ -813,16 +820,16 @@
                 badge.className = 'badge ' + (presentiel ? 'badge-info' : aVote ? 'badge-success' : 'badge-danger');
                 badge.textContent = presentiel ? 'PRÉSENTIEL' : aVote ? 'A VOTÉ' : 'EN ATTENTE';
                 tdStatut.appendChild(badge);
- 
+
                 const tdChoix = document.createElement('td');
                 tdChoix.style.cssText = 'color: var(--primary); font-weight: bold;';
                 const cand = CANDIDATS.find(c => info && c.id === info.choice);
                 tdChoix.textContent = presentiel ? '(papier)' : cand ? cand.nom : '-';
- 
+
                 const tdTime = document.createElement('td');
                 tdTime.style.color = '#94a3b8';
                 tdTime.textContent = (info && info.timestamp) || '-';
- 
+
                 const tdAct = document.createElement('td');
                 if (!aVote) {
                     const b = document.createElement('button');
@@ -831,12 +838,12 @@
                     b.onclick = () => marquerPresentiel(num);
                     tdAct.appendChild(b);
                 }
- 
+
                 tr.append(tdNum, tdStatut, tdChoix, tdTime, tdAct);
                 tbody.appendChild(tr);
             });
         }
- 
+
         async function marquerPresentiel(num) {
             if (!confirm("Marquer le N° " + num + " comme ayant voté en présentiel ? Il ne pourra plus voter en ligne.")) return;
             try {
@@ -852,7 +859,7 @@
                 showAlert('panelAlert', 'Action refusée.');
             }
         }
- 
+
         async function basculerScrutin() {
             try {
                 await database.ref('config/closed').set(!scrutinFerme);
@@ -860,7 +867,7 @@
                 showAlert('panelAlert', 'Action refusée.');
             }
         }
- 
+
         async function reinitialiserToutesLesDonnees() {
             if (prompt("Pour réinitialiser tous les votes enregistrés sur le serveur, tapez EFFACER :") !== "EFFACER") return;
             try {
@@ -873,4 +880,3 @@
     </script>
 </body>
 </html>
- 
