@@ -396,29 +396,7 @@
         </div>
     </div>
 
-    <!-- BOUTON ACCÈS ADMIN -->
-    <button class="admin-trigger" onclick="ouvrirModalAdmin()">
-        <i class="fa-solid fa-lock"></i> Administration
-    </button>
-
-    <!-- MODAL ADMIN -->
-    <div id="adminModal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="modal-close" onclick="fermerModalAdmin()">&times;</button>
-            <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-user-shield" style="color: var(--primary);"></i> Espace Administrateur</h2>
-
-            <div id="adminLoginForm">
-                <div class="form-group">
-                    <label for="adminPass">Code d'accès administrateur :</label>
-                    <div class="input-with-icon">
-                        <i class="fa-solid fa-key"></i>
-                        <input type="password" id="adminPass" placeholder="Mot de passe (Défaut: 1234)">
-                    </div>
-                </div>
-                <button class="btn" onclick="connexionAdmin()">Déverrouiller le Dépouillement</button>
-                <div id="adminAlert" class="alert alert-error"></div>
-            </div>
-
+             
             <div id="adminPanel" style="display: none;">
                 <div class="stats-grid">
                     <div class="stat-card">
