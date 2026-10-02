@@ -23,6 +23,15 @@
             --danger: #ef4444;
             --radius: 16px;
         }
+                    /* Masquer le badge Netlify */
+            #netlify-badge, 
+            [data-netlify-badge], 
+            .netlify-badge {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+            }
 
         * {
             box-sizing: border-box;
@@ -426,16 +435,7 @@
                 <div class="chart-container">
                     <canvas id="resultsChart"></canvas>
                 </div>
-                <style>
-    #netlify-badge, 
-    [data-netlify-badge], 
-    .netlify-badge {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-    }
-</style>
-
+     
                 <h3 style="font-size: 1rem; margin-top: 20px; margin-bottom: 10px;">Émargement Synchronisé (10 Électeurs)</h3>
                 <div style="overflow-x: auto;">
                     <table class="voters-table">
